@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subscribe to Jobbyist Pro — R99/Month | Secure Checkout</title>
+<meta name="description" content="Subscribe to Jobbyist Pro securely via PayPal. First 3 months at 50% off, plus free access to The 90-Day Job Search Sprint." />
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/jobbyist-shared.css">
+</head>
+<body>
+
+<!-- Minimal header — no nav, no preloader. Checkout pages convert best with zero distractions. -->
+<header class="site-header">
+  <div class="wrap header-inner minimal">
+    <a href="jobbyist-pro-landing-page.html" class="brand-lockup">
+      <span class="logo-jobbyist">JOBBYIST<span class="dot">.</span></span><span class="pro-badge">PRO</span>
+    </a>
+    <a href="jobbyist-pro-landing-page.html" class="btn btn-ghost btn-sm">← Back to Jobbyist Pro</a>
+  </div>
+</header>
+
+<div class="minimal-shell">
+
+  <div style="text-align:center;margin-bottom:30px;">
+    <div class="eyebrow" style="justify-content:center;display:flex;">SECURE CHECKOUT</div>
+    <h1 style="font-size:clamp(26px,4vw,36px);">Subscribe to Jobbyist Pro</h1>
+    <p style="color:var(--ink-soft);font-size:15px;margin-top:10px;">First 3 months at half price. Cancel anytime.</p>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="summary-card">
+    <h3>Order summary</h3>
+    <div class="summary-row">
+      <span class="lbl">Plan</span>
+      <span class="val">Jobbyist Pro Monthly</span>
+    </div>
+    <div class="summary-row">
+      <span class="lbl">First 3 months</span>
+      <span class="val"><span class="strike">R99.00</span>R49.50 / mo</span>
+    </div>
+    <div class="summary-row">
+      <span class="lbl">From month 4</span>
+      <span class="val">R99.00 / mo</span>
+    </div>
+    <div class="summary-row total">
+      <span class="lbl">Due today</span>
+      <span class="val">R49.50</span>
+    </div>
+    <div class="included-pill">✓ Includes free access to The 90-Day Job Search Sprint</div>
+  </div>
+
+  <!-- OPTIONAL PROMO CODE (cross-funnel compatibility, not required) -->
+  <div class="summary-card" style="padding:22px 30px;">
+    <div class="field" style="margin-bottom:0;">
+      <label for="promoCode">Promo code (optional)</label>
+      <input type="text" id="promoCode" placeholder="e.g. SPRINT50-001" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- PAYPAL BUTTON -->
+  <div class="summary-card" style="text-align:center;">
+    <h3 style="margin-bottom:14px;">Pay securely with PayPal</h3>
+    <div id="paypal-button-container"></div>
+    <p class="paypal-fallback-msg" id="paypalFallbackMsg">Checkout is temporarily unavailable. Please email <a href="mailto:support@jobbyist.co.za" style="color:var(--blue-1);font-weight:700;">support@jobbyist.co.za</a> to subscribe manually.</p>
+    <div class="trust-row">
+      <span class="item"><span class="ic">✓</span> PayPal Buyer Protection</span>
+      <span class="item"><span class="ic">✓</span> SSL-secured checkout</span>
+      <span class="item"><span class="ic">✓</span> Cancel anytime</span>
+    </div>
+  </div>
+
+  <div class="banner-note">
+    <b>30-Day Money-Back Guarantee.</b> Not the right fit? Request a full refund within 30 days — see the Service Handbook for conditions.
+  </div>
+
+</div>
+
+<footer class="minimal">
+  <div class="wrap">
+    <p>© 2026 Jobbyist South Africa. All rights reserved.</p>
+    <p><a href="mailto:support@jobbyist.co.za" style="color:rgba(255,255,255,0.75);">support@jobbyist.co.za</a> · +27 12-880-6560</p>
+  </div>
+</footer>
+
+<!-- =====================================================================
+     PAYPAL SUBSCRIPTIONS INTEGRATION
+
+     Before going live, replace:
+       1. YOUR_PAYPAL_CLIENT_ID  — from your PayPal Developer Dashboard
+       2. YOUR_PLAN_ID           — a PayPal Subscription Plan you create
+                                    with TWO billing cycles:
+                                      Cycle 1: 3 cycles @ R49.50/month
+                                      Cycle 2: regular, ongoing @ R99/month
+                                    (Set this up under PayPal > Billing
+                                    Plans, or via the Subscriptions API.)
+
+     This uses PayPal's Subscriptions flow (createSubscription), which is
+     the correct approach for recurring billing with an introductory
+     price tier — not a one-time Order/Capture flow.
+     ===================================================================== -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription&currency=ZAR"></script>
+<script>
+(function(){
+  "use strict";
+
+  var THANK_YOU_URL = "thank-you.html"; // production: https://pro.jobbyist.co.za/thank-you
+  var PLAN_ID = "YOUR_PLAN_ID";
+
+  function renderFallback(){
+    document.getElementById("paypalFallbackMsg").style.display = "block";
+  }
+
+  if (window.paypal && typeof window.paypal.Buttons === "function"){
+    try {
+      paypal.Buttons({
+        style: { shape: "pill", color: "blue", layout: "vertical", label: "subscribe" },
+
+        createSubscription: function(data, actions){
+          return actions.subscription.create({
+            plan_id: PLAN_ID,
+            custom_id: (document.getElementById("promoCode").value || "").trim().toUpperCase()
+          });
+        },
+
+        onApprove: function(data){
+          // data.subscriptionID is available here if you want to log/store it
+          // before redirecting (e.g. send to your own backend or analytics).
+          window.location.href = THANK_YOU_URL;
+        },
+
+        onCancel: function(){
+          // User closed the PayPal window without completing payment.
+        },
+
+        onError: function(err){
+          console.error("PayPal Buttons error:", err);
+          renderFallback();
+        }
+
+      }).render("#paypal-button-container");
+    } catch (e){
+      console.error("Failed to render PayPal Buttons:", e);
+      renderFallback();
+    }
+  } else {
+    renderFallback();
+  }
+})();
+</script>
+</body>
+</html>
